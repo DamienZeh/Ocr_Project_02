@@ -63,13 +63,15 @@ def etl_book(url_book): #on récupère les détails du livre
 
 
 def writer_data_book_csv(data_book):
+    heading = ["product_page_url", "universal_product_code (upc)", "title","price_including_tax", "price_excluding_tax", "number_available", "product_description", "category","review_rating", "image_url" ]
     with open('Analyze_Product_From_Category.csv', 'a', encoding='utf-8', errors='ignore') as fichier_csv:
         writer = csv.writer(fichier_csv, delimiter=',')
+        writer.writerow(heading)
         writer.writerow(data_book)
 
 
 #tapez dans les parenthèses, avec les guillemets, le lien du livre désiré.
-etl_book("https://books.toscrape.com/catalogue/alice-in-wonderland-alices-adventures-in-wonderland-1_5/index.html")
+etl_book("https://books.toscrape.com/catalogue/emma_17/index.html")
 
 
 

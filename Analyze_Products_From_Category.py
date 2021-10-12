@@ -25,12 +25,7 @@ def etl_pages_category(url_pages_category): # récupère toutes les pages d'une 
         pages_category.append(url_category_index)                #on stocke toutes les pages de la categorie dans la liste 'pageCategory'.
 
 
-    #en tête de la fiche
-    heading = ["product_page_url", "universal_product_code (upc)", "title","price_including_tax", "price_excluding_tax", "number_available", "product_description", "category","review_rating", "image_url" ]
-
-    with open('Analyze_Product_From_Category.csv', 'w', encoding='utf-8', errors='ignore') as fichier_csv:
-        writer = csv.writer(fichier_csv, delimiter=',')
-        writer.writerow(heading)
+    creation_csv()         #On crée le csv avec l'entête.
 
 
     for page in pages_category:    #on boucle sur la fonction etl_books_in_page()
@@ -54,87 +49,82 @@ def etl_books_in_page(url_page_livres):             # récupère tous les livres
         etl_book(book)
 
 
-
-
 def etl_book(url_book): #on récupère les détails du livre
     page = requests.get(url_book)
     soup = BeautifulSoup(page.content, 'html.parser')
-    details_prod_upc_tax_available = soup.find_all('td') #ici on trouve l'UPC, les taxes et la disponibilité
-
-    # url link
-    address_url = url_book.split()
-
+    details_prod_upc_tax_available = soup.find_all('td')  # ici on trouve l'UPC, les taxes et la disponibilité
 
     # code UPC
-    universal_product_code = details_prod_upc_tax_available[0]
+    universal_product_code = ''.join(details_prod_upc_tax_available[0])
 
     # titre
-    titles = soup.find('li', class_="active")
+    titles = ''.join(soup.find('li', class_="active"))
 
     # price_including_tax
-    price_including_tax = details_prod_upc_tax_available[3]
+    price_including_tax = ''.join(details_prod_upc_tax_available[3])
 
     # price_excluding_tax
-    price_excluding_tax = details_prod_upc_tax_available[2]
+    price_excluding_tax = ''.join(details_prod_upc_tax_available[2])
 
     # available
-    number_available = details_prod_upc_tax_available[5]
+    number_available = ''.join(details_prod_upc_tax_available[5])
 
     # description
-    product_descriptions = soup.find(class_='product_page').find_all('p')  # contenu de la classe product page
-    product_description = product_descriptions[3]  # 3 est la position de la description en 'p' dans la class product_page
+    try:                       #il y a des livres qui n'ont pas de description, on gère cette possible erreur ici, avec un try except.
+        product_descriptions = soup.find(class_='product_page').find_all('p')  # contenu de la classe product page
+        product_description = ''.join(product_descriptions[3])  # 3 est la position de la description en 'p' dans la class product_page
+    except:
+        product_description = "pas de description pour ce livre."
 
     # category
     categories_all = soup.find('ul', class_="breadcrumb").find_all('a')
-    categories = categories_all[2]
-
-
+    categories = ''.join(categories_all[2])
 
     # review_rating
     review_rating_stars = soup.find('div', class_="col-sm-6 product_main").find_all('p')[2]
     rating_stars = (review_rating_stars['class'])
     review_rating = rating_stars[1]
-    if review_rating == "One":
-        review_rating = "1_/_5"
+    if review_rating == "One":  # on adapte le chiffre obtenu avec une note sur cing.
+        review_rating = "1 / 5"
     elif review_rating == "Two":
-        review_rating = "2_/_5"
+        review_rating = "2 / 5"
     elif review_rating == "Three":
-        review_rating = "3_/_5"
+        review_rating = "3 / 5"
     elif review_rating == "Four":
-        review_rating = "4_/_5"
+        review_rating = "4 / 5"
     elif review_rating == "Five":
-        review_rating = "5_/_5"
+        review_rating = "5 / 5"
     else:
-        review_rating = "0_/_5"
-    reviews_rating = review_rating.split()    #on le transforme en liste
+        review_rating = "0 / 5"
+    reviews_rating = ''.join(review_rating)  # on le transforme en liste
 
     # image_url
     pic_url = soup.img
     img_url = pic_url['src']
-    str_img_url="".join(img_url)
-    replace_img_url= str_img_url.replace("../../", "https://books.toscrape.com/")
-    image_url =replace_img_url.split()        #on le transforme en liste
+    str_img_url = "".join(img_url)
+    image_url = str_img_url.replace("../../", "https://books.toscrape.com/")  # on a notre lien image url.
 
-    #on appelle la fonction 'writer_data_books_categorie' pour écrire les données du livre dans le csv.
-    writer_data_books_categorie(address_url,universal_product_code, titles, price_including_tax, price_excluding_tax, number_available, product_description, categories, reviews_rating, image_url)
+    data_book = url_book, universal_product_code, titles, price_including_tax, price_excluding_tax, number_available, product_description, categories, reviews_rating, image_url
+    writer_data_book_csv(data_book)
 
-
-
+# crée le csv avec l'entête.
+def creation_csv():
+    #en tête de la fiche
+    heading = ["product_page_url", "universal_product_code (upc)", "title","price_including_tax", "price_excluding_tax", "number_available", "product_description", "category","review_rating", "image_url" ]
+    with open('Analyze_Products_From_Category.csv', 'w', encoding='utf-8', errors='ignore') as fichier_csv:
+            writer = csv.writer(fichier_csv, delimiter=',')
+            writer.writerow(heading)
 
 # écrit les données de tous les livres de toutes les pages d'une catégorie.
-# attention!!! A chaque génération de csv, supprimez l'ancien, avant.
-def writer_data_books_categorie(url, universal_product_code, titles, price_including_tax, price_excluding_tax, number_available, product_description, categories, reviews_rating, image_url):
-    with open('Analyze_Product_From_Category.csv', 'a', encoding='utf-8', errors='ignore') as fichier_csv:
+def writer_data_book_csv(data_book):
+    with open('Analyze_Products_From_Category.csv', 'a', encoding='utf-8', errors='ignore') as fichier_csv:
         writer = csv.writer(fichier_csv, delimiter=',')
-
-        for address_url, upc, title, tax_inc, tax_excl, available, description, category, review_rating, img_url in zip(url, universal_product_code, titles, price_including_tax, price_excluding_tax, number_available, product_description, categories, reviews_rating, image_url):
-            writer.writerow([address_url, upc, title, tax_inc, tax_excl, available, description, category, review_rating, img_url])
+        writer.writerow(data_book)
 
 
 
-
-#tapez dans les parenthèses le lien de la première page de la catégorie désirée.
-etl_pages_category("https://books.toscrape.com/catalogue/category/books/fiction_10/index.html")
+#tapez dans les parenthèses, avec les guillemets, le lien de la première page de la catégorie désirée.
+etl_pages_category("https://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html")
 
 
 

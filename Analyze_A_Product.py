@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
-
+import urllib.request
 
 def etl_book(url_book): #on récupère les détails du livre
     page = requests.get(url_book)
@@ -12,7 +12,7 @@ def etl_book(url_book): #on récupère les détails du livre
     universal_product_code = ''.join(details_prod_upc_tax_available[0])
 
     # titre
-    titles = ''.join(soup.find('li', class_="active"))
+    title = ''.join(soup.find('li', class_="active"))
 
     # price_including_tax
     price_including_tax = ''.join(details_prod_upc_tax_available[3])
@@ -57,14 +57,20 @@ def etl_book(url_book): #on récupère les détails du livre
     img_url = pic_url['src']
     str_img_url = "".join(img_url)
     image_url = str_img_url.replace("../../", "https://books.toscrape.com/")  # on a notre lien image url.
-
-    data_book = url_book, universal_product_code, titles, price_including_tax, price_excluding_tax, number_available, product_description, categories, reviews_rating, image_url
+    data_book = url_book, universal_product_code, title, price_including_tax, price_excluding_tax, number_available, product_description, categories, reviews_rating, image_url
     writer_data_book_csv(data_book)
+    writer_image_book(title, image_url)
 
+# écrit l'image du livre avec le nom du titre.
+def writer_image_book(title, image_url):
+    image_file = open(title+'.jpg', 'wb')
+    image_file.write(urllib.request.urlopen(image_url).read())
+    image_file.close()
 
+# écrit les données d'un livre + son en-tête.
 def writer_data_book_csv(data_book):
     heading = ["product_page_url", "universal_product_code (upc)", "title","price_including_tax", "price_excluding_tax", "number_available", "product_description", "category","review_rating", "image_url" ]
-    with open('Analyze_Product_From_Category.csv', 'a', encoding='utf-8', errors='ignore') as fichier_csv:
+    with open('Analyze_A_Product.csv', 'a', encoding='utf-8', errors='ignore') as fichier_csv:
         writer = csv.writer(fichier_csv, delimiter=',')
         writer.writerow(heading)
         writer.writerow(data_book)

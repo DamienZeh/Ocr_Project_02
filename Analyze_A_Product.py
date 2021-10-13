@@ -18,7 +18,10 @@ def etl_book(url_book): #on récupère les détails du livre
     soup = BeautifulSoup(page.content, 'html.parser')
     details_prod_upc_tax_available = soup.find_all('td')  # ici on trouve l'UPC, les taxes et la disponibilité
     universal_product_code = ''.join(details_prod_upc_tax_available[0])     # code UPC
-    title = ''.join(soup.find('li', class_="active"))                     # titre
+    title_name = ''.join(soup.find('li', class_="active"))    # titre.
+    title = title_name[:90].replace(',', '_').replace("'", '_').replace(':', '_').replace('/', '_').replace('"', '_').replace('*', '_')\
+        .replace('?', '.').replace('#', '_').replace('%', '_').replace('-', '_').replace('é', 'e').replace('è', 'e')\
+        .replace('à', 'a').replace('â', 'a').replace('â', 'a').replace(' ', '_')#sans caractères spéciaux, limite taille
     price_including_tax = ''.join(details_prod_upc_tax_available[3])    # price_including_tax
     price_excluding_tax = ''.join(details_prod_upc_tax_available[2])    # price_excluding_tax
     number_available = ''.join(details_prod_upc_tax_available[5])       # available
@@ -71,8 +74,7 @@ def writer_image_book(title, image_url):
     except:
         print('directory already exists')
     response = requests.get(image_url)
-    print(response.__dict__)
-    with open(path+f'/{title}.jpeg', 'wb') as image_file:
+    with open(path+f'/{title}.jpg', 'wb') as image_file:
         image_file.write(response.content)
 
 
@@ -86,7 +88,7 @@ def writer_data_book_csv(data_book):
 
 
 #tapez dans les parenthèses, avec les guillemets, le lien du livre désiré.
-main("https://books.toscrape.com/catalogue/worlds-elsewhere-journeys-around-shakespeares-globe_972/index.html")
+main("https://books.toscrape.com/catalogue/10-happier-how-i-tamed-the-voice-in-my-head-reduced-stress-without-losing-my-edge-and-found-self-help-that-actually-works_582/index.html")
 
 
 

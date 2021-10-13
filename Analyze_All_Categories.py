@@ -1,14 +1,29 @@
-
-
 import requests
 from bs4 import BeautifulSoup
 import csv
+import os
+
 
 
 
 def main(url):
+    try:                               # On teste si le dossier existe déjà.
+        os.mkdir('Images_Books_All_Category')
+    except:
+        print('directory already exists')
+
+    """
+    data_book = etl_book("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html")
+    title_book = data_book[2]  # on récupère le nom du livre et le lien de l'image_url pour enregistrer l'image.
+    print(title_book)
+    image_url = data_book[-1]
+    print(image_url)
+    writer_image_book(title_book, image_url, path)
+
+    """
     names_categories = etl_list_names_categories(url)
     links_categories = etl_links_all_categories(url)
+    
     for csv in etl_list_names_categories(url):   # on crée d'abord les csv avec l'en-tête.
         creation_csv(csv)
 
@@ -16,11 +31,19 @@ def main(url):
         all_data_books_in_category(link, name_category)
 
 
-def all_data_books_in_category(link_first_page_category, name_category):
+def all_data_books_in_category(link_first_page_category, name_category): # écrit tous les livres de la categorie.
+    path = 'Images_Books_All_Category'  # répertoire de sortie pour les images.
+
     for page in etl_pages_category(link_first_page_category):
         etl_books_in_page(page)
         for books in etl_books_in_page(page):
             writer_books_category_csv(etl_book(books), name_category)
+            data_book = etl_book(books)
+            title_book = data_book[2]  # on récupère le nom du livre et le lien de l'image_url pour enregistrer l'image.
+            image_url = data_book[-1]
+            writer_image_book(title_book, image_url, path)
+
+
 
 
 def etl_links_all_categories(url_all_categories): #récupère les liens des catégories
@@ -47,7 +70,7 @@ def etl_list_names_categories(url_names_categories):    #récupère les noms des
     names_with_number = str_names_without_end.split(',')
     first_names_without_number = []
     last_names_without_number = []
-    names_first_part = names_with_number[0:7]  # on sépare la liste entre ceux qui ont 2 caractère à enlever et ceux qui ont 3.
+    names_first_part = names_with_number[0:8]  # on sépare la liste entre ceux qui ont 2 caractère à enlever et ceux qui ont 3.
     names_end_part = names_with_number[8:50]
     for name in names_first_part:  # on enlève les 2 derniers caractères de cette partie de la liste
         first_name_without_number = name[:-2]
@@ -101,17 +124,15 @@ def etl_book(url_book): #on récupère les détails du livre
     page = requests.get(url_book)
     soup = BeautifulSoup(page.content, 'html.parser')
     details_prod_upc_tax_available = soup.find_all('td') #ici on trouve l'UPC, les taxes et la disponibilité
+    universal_product_code = ''.join(details_prod_upc_tax_available[0])          # code UPC
+    title_name = ''.join(soup.find('li', class_="active"))    # titre.
+    title = title_name[:90].replace(',', '_').replace("'", '_').replace(':', '_').replace('/', '_').replace('"', '_').replace('*', '_')\
+        .replace('?', '.').replace('#', '_').replace('%', '_').replace('-', '_').replace('é', 'e').replace('è', 'e')\
+        .replace('à', 'a').replace('â', 'a').replace('â', 'a').replace(' ', '_')#sans caractères spéciaux, limite taille
 
-    # code UPC:
-    universal_product_code = ''.join(details_prod_upc_tax_available[0])
-    # titre:
-    titles = ''.join(soup.find('li', class_="active"))
-    # price_including_tax:
-    price_including_tax = ''.join(details_prod_upc_tax_available[3])
-    # price_excluding_tax:
-    price_excluding_tax = ''.join(details_prod_upc_tax_available[2])
-    # available:
-    number_available = ''.join(details_prod_upc_tax_available[5])
+    price_including_tax = ''.join(details_prod_upc_tax_available[3])      # price_including_tax
+    price_excluding_tax = ''.join(details_prod_upc_tax_available[2])        # price_excluding_tax
+    number_available = ''.join(details_prod_upc_tax_available[5])           # available
     # description:
     try:     #il y a des livres qui n'ont pas de description, on gère cette possible erreur ici, avec un try except.
         product_descriptions = soup.find(class_='product_page').find_all('p')  # contenu de la classe product page
@@ -144,22 +165,36 @@ def etl_book(url_book): #on récupère les détails du livre
     str_img_url="".join(img_url)
     image_url= str_img_url.replace("../../", "https://books.toscrape.com/")#on a notre lien image url.
 
-    data_book=url_book,universal_product_code, titles, price_including_tax, price_excluding_tax, number_available, product_description, categories, reviews_rating, image_url
+    # data_book récupère toute les infos du livre
+    data_book=url_book,universal_product_code, title, price_including_tax, price_excluding_tax, number_available, product_description, categories, reviews_rating, image_url
     return data_book
+
+#écrit l'image
+def writer_image_book(title, image_url, path):
+    response = requests.get(image_url)
+    with open(path+f'/{title}.jpg', 'wb') as image_file:
+        image_file.write(response.content)
+
 
 # crée le csv avec l'entête.
 def creation_csv(name_category):
     #en tête de la fiche
     heading = ["product_page_url", "universal_product_code (upc)", "title","price_including_tax", "price_excluding_tax", "number_available", "product_description", "category","review_rating", "image_url" ]
-    with open('Analyze_Products_From_Category_'+name_category+'.csv', 'w', encoding='utf-8', errors='ignore') as fichier_csv:
+    with open('Analyze_Products_From_Category_'+name_category+'.csv', 'w', encoding='utf-8', errors='ignore') as fichier_csv:       # 'encoding='utf-8', errors='ignore', permet d'éviter les UnicodeError
             writer = csv.writer(fichier_csv, delimiter=',')
             writer.writerow(heading)
 
 # crée les données d'un livre.
 def writer_books_category_csv(data_category, name_category):
-    with open('Analyze_Products_From_Category_'+name_category+'.csv', 'a', encoding='utf-8', errors='ignore') as fichier_csv:
+    with open('Analyze_Products_From_Category_'+name_category+'.csv', 'a', encoding='utf-8', errors='ignore') as fichier_csv:       # 'encoding='utf-8', errors='ignore', permet d'éviter les UnicodeError
         writer = csv.writer(fichier_csv, delimiter=',')
         writer.writerow(data_category)
+
+def writer_data_book_csv(data_book):
+    with open('Analyze_Products_From_Category.csv', 'a', encoding='utf-8', errors='ignore') as fichier_csv:   # 'encoding='utf-8', errors='ignore', permet d'éviter les UnicodeError
+        writer = csv.writer(fichier_csv, delimiter=',')
+        writer.writerow(data_book)
+
 
 #tapez dans les parenthèses, avec les guillemets, le lien de Book To Scrape.
 main("https://books.toscrape.com/")

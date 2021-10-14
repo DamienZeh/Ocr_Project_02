@@ -5,22 +5,7 @@ import os
 
 
 
-
 def main(url):
-    try:                               # On teste si le dossier existe déjà.
-        os.mkdir('Images_Books_All_Category')
-    except:
-        print('directory already exists')
-
-    """
-    data_book = etl_book("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html")
-    title_book = data_book[2]  # on récupère le nom du livre et le lien de l'image_url pour enregistrer l'image.
-    print(title_book)
-    image_url = data_book[-1]
-    print(image_url)
-    writer_image_book(title_book, image_url, path)
-
-    """
     names_categories = etl_list_names_categories(url)
     links_categories = etl_links_all_categories(url)
     
@@ -30,9 +15,13 @@ def main(url):
     for link, name_category in zip(links_categories, names_categories):
         all_data_books_in_category(link, name_category)
 
+def requests_parser(url): #demande requête
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    return soup
 
 def all_data_books_in_category(link_first_page_category, name_category): # écrit tous les livres de la categorie.
-    path = 'Images_Books_All_Category'  # répertoire de sortie pour les images.
+
 
     for page in etl_pages_category(link_first_page_category):
         etl_books_in_page(page)
@@ -41,14 +30,10 @@ def all_data_books_in_category(link_first_page_category, name_category): # écri
             data_book = etl_book(books)
             title_book = data_book[2]  # on récupère le nom du livre et le lien de l'image_url pour enregistrer l'image.
             image_url = data_book[-1]
-            writer_image_book(title_book, image_url, path)
-
-
-
+            writer_image_book(title_book, image_url)
 
 def etl_links_all_categories(url_all_categories): #récupère les liens des catégories
-    page = requests.get(url_all_categories)
-    soup = BeautifulSoup(page.content, 'html.parser')
+    soup = requests_parser(url_all_categories)
     links_categories = soup.find('ul', class_="nav nav-list").find_all('a')
     list_links_categories_raw = []
     for category in links_categories:
@@ -82,10 +67,8 @@ def etl_list_names_categories(url_names_categories):    #récupère les noms des
     return list_names
 
 
-def etl_pages_category(url_pages_category): # récupère toutes les pages d'une catégorie, si on lui donne la première
-    page = requests.get(url_pages_category)
-    soup = BeautifulSoup(page.content, 'html.parser')
-
+def etl_pages_category(url_pages_category): # récupère toutes les pages d'une catégorie, si on lui donne la première page.
+    soup = requests_parser(url_pages_category)
     #'pager' va servir de référence pour le nombre max de page. On vérifie qu'il existe avec try/except. Si oui, c'est qu'il y a plus d'une page.
     try:
         pager =  soup.find(class_='current').text   # affiche page actuel sur page suivante. ex: Page 2 of 4
@@ -105,10 +88,8 @@ def etl_pages_category(url_pages_category): # récupère toutes les pages d'une 
     return pages_category
 
 
-
-def etl_books_in_page(url_page_livres):             # récupère tous les livres d'une page
-    page = requests.get(url_page_livres)
-    soup = BeautifulSoup(page.content, 'html.parser') #on obtient une variable qui a des doublons et des liens inutiles.
+def etl_books_in_page(url_page_livres):        # récupère tous les livres d'une page
+    soup= requests_parser(url_page_livres)
     links_books= soup.select('h3 > a')                #on récupère les liens html des livres.
     list_books_duplication = []
     for link in links_books:                          #on transforme les liens en liste, sans balises.
@@ -121,8 +102,7 @@ def etl_books_in_page(url_page_livres):             # récupère tous les livres
 
 
 def etl_book(url_book): #on récupère les détails du livre
-    page = requests.get(url_book)
-    soup = BeautifulSoup(page.content, 'html.parser')
+    soup = requests_parser(url_book)
     details_prod_upc_tax_available = soup.find_all('td') #ici on trouve l'UPC, les taxes et la disponibilité
     universal_product_code = ''.join(details_prod_upc_tax_available[0])          # code UPC
     title_name = ''.join(soup.find('li', class_="active"))    # titre.
@@ -170,11 +150,15 @@ def etl_book(url_book): #on récupère les détails du livre
     return data_book
 
 #écrit l'image
-def writer_image_book(title, image_url, path):
+def writer_image_book(title, image_url):
+    path = 'Images_Books_All_Category'  # répertoire de sortie pour les images.
+    try:                               # On teste si le dossier existe déjà.
+        os.mkdir('Images_Books_All_Category')
+    except:
+        pass
     response = requests.get(image_url)
     with open(path+f'/{title}.jpg', 'wb') as image_file:
         image_file.write(response.content)
-
 
 # crée le csv avec l'entête.
 def creation_csv(name_category):
@@ -190,11 +174,7 @@ def writer_books_category_csv(data_category, name_category):
         writer = csv.writer(fichier_csv, delimiter=',')
         writer.writerow(data_category)
 
-def writer_data_book_csv(data_book):
-    with open('Analyze_Products_From_Category.csv', 'a', encoding='utf-8', errors='ignore') as fichier_csv:   # 'encoding='utf-8', errors='ignore', permet d'éviter les UnicodeError
-        writer = csv.writer(fichier_csv, delimiter=',')
-        writer.writerow(data_book)
-
 
 #tapez dans les parenthèses, avec les guillemets, le lien de Book To Scrape.
 main("https://books.toscrape.com/")
+

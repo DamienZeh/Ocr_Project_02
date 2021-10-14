@@ -12,7 +12,7 @@ def main(url_category):
     except:
         print('directory already exists')
 
-    for pages in etl_pages_category("https://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html"):
+    for pages in etl_pages_category(url_category):
         for books in etl_books_in_page(pages):
             writer_data_book_csv(etl_book(books))
 
@@ -22,13 +22,14 @@ def main(url_category):
             writer_image_book(title_book, image_url, path)
 
 
-
-
-
+def requests_parser(url):  #demande requête
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    return soup
 
 def etl_pages_category(url_pages_category): # récupère toutes les pages d'une catégorie
-    page = requests.get(url_pages_category)
-    soup = BeautifulSoup(page.content, 'html.parser')
+
+    soup = requests_parser(url_pages_category)
 
     #'pager' va servir de référence pour le nombre max de page. On vérifie qu'il existe avec try/except. Si oui, c'est qu'il y a plus d'une page.
     try:
@@ -52,8 +53,7 @@ def etl_pages_category(url_pages_category): # récupère toutes les pages d'une 
 
 
 def etl_books_in_page(url_page_livres):             # récupère tous les livres d'une page
-    page = requests.get(url_page_livres)
-    soup = BeautifulSoup(page.content, 'html.parser') #on obtient une variable qui a des doublons et des liens inutiles.
+    soup = requests_parser(url_page_livres)
     links_books= soup.select('h3 > a')                #on récupère les liens html des livres.
     list_books_duplication = []
     for link in links_books:                          #on transforme les liens en liste, sans balises.
@@ -68,8 +68,7 @@ def etl_books_in_page(url_page_livres):             # récupère tous les livres
 
 
 def etl_book(url_book): #on récupère les détails du livre
-    page = requests.get(url_book)
-    soup = BeautifulSoup(page.content, 'html.parser')
+    soup = requests_parser(url_book)
     details_prod_upc_tax_available = soup.find_all('td')  # ici on trouve l'UPC, les taxes et la disponibilité
     universal_product_code = ''.join(details_prod_upc_tax_available[0])     # code UPC
     title_name = ''.join(soup.find('li', class_="active"))    # titre.
@@ -144,8 +143,5 @@ def writer_data_book_csv(data_book):
 
 
 #tapez dans les parenthèses, avec les guillemets, le lien de la première page de la catégorie désirée.
-main("https://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html")
-
-
-
+main("https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html")
 

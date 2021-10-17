@@ -1,7 +1,11 @@
-# Scraper For Books To Scrape 
+# Scraper pour Books To Scrape 
 
 
 Projet permettant de scraper de 3 manières différentes le contenu du site [https://books.toscrape.com](https://books.toscrape.com/).
+
+
+
+
 
 
 ## Téléchargement et installation 
@@ -18,6 +22,8 @@ Projet permettant de scraper de 3 manières différentes le contenu du site [htt
 	_(on a maintenant un ‘(env)’ d’afficher)_
 - Puis, l’installation  des packages(présent dans le requirements.text):
 	``pip install -r requirements.txt``
+
+
 
 
 ## Démarrage
@@ -41,6 +47,7 @@ qui va donner tous les livres et leurs informations de tout le site [https://bo
 
 
 
+
 ### Avancé
 
 Si vous souhaitez scraper d’autre lien dans le site, vous pouvez passer par un ide, comme [Pycharm](https://www.jetbrains.com/fr-fr/pycharm/) :
@@ -48,7 +55,7 @@ Si vous souhaitez scraper d’autre lien dans le site, vous pouvez passer par un
 - Lancez Pycharm
 - Ouvrir le dossier Ocr_Project_02.
 Puis pour activer l’environnement virtuel déjà présent dans le projet :
- ``**File**→**Settings**→ **Project : Ocr_Project_02** → **Python Interpreter**→bouton **paramètre**(à droite)→**add**→cochez **Existing environnment**, puis choissisez le fichier **python.exe**, présent dans le projet dans ``env\Scripts\``. Puis faites **ok**.
+ ``File`` → ``Settings`` → ``Project : Ocr_Project_02`` → ``Python Interpreter`` → bouton ``paramètre``(à droite) → ``add → cochez ``Existing environnment``, puis choissisez le fichier ``python.exe``, présent dans le projet dans ``env\Scripts\``. Puis faites ``ok``.
 
 Puis ouvrez le fichier qui vous intéresses. Chacun des trois fichiers python, une fois exécuté vous donnera un dossier de sortie avec ses fichiers csv, et un dossier avec ses images de livres.
 _(les dossiers porteront le même nom que leur fichier, plus '**__Csv**' ou '**__Images**' à la fin.
@@ -65,8 +72,11 @@ Et enfin pour **Analyze_All_Categories.py** vous aurez tout le contenu du site b
 
 
 
+
+
+
 ### Auteur
 
-* **Damien Hernandez** _alias_[DamienZeh](https://damienhernandez.fr/)
+* **Damien Hernandez** _alias_ [DamienZeh](https://damienhernandez.fr/)
 
 

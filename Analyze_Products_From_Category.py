@@ -67,13 +67,12 @@ def etl_books_in_page(url_page_livres):             # récupère tous les livres
     return books
 
 def etl_book(url_book, soup): #on récupère les détails du livre
-
     details_prod_upc_tax_available = soup.find_all('td')  # ici on trouve l'UPC, les taxes et la disponibilité
     universal_product_code = ''.join(details_prod_upc_tax_available[0])     # code UPC
     title_name = ''.join(soup.find('li', class_="active"))  # titre.
-    title = title_name[:90].replace(',', '_').replace("'", '_').replace(':', '_').replace('/', '_').replace('"','_').replace('*', '_') \
-        .replace('?', '.').replace('#', '_').replace('%', '_').replace('-', '_').replace('é', 'e').replace('è', 'e') \
-        .replace('à', 'a').replace('â', 'a').replace('â', 'a').replace(' ','_')  # sans caractères spéciaux, limite taille
+    # on limite la longueur et on enlève les caractères qui bloquent
+    title = title_name[:90].replace(':', '_').replace('/','_').replace("'","").replace('"','').replace('*', '_')\
+        .replace('?', '_')
     price_including_tax = ''.join(details_prod_upc_tax_available[3])         # price_including_tax
     price_excluding_tax = ''.join(details_prod_upc_tax_available[2])           # price_excluding_tax
     number_available = ''.join(details_prod_upc_tax_available[5])         # available

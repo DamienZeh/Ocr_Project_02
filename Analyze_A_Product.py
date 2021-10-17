@@ -81,7 +81,7 @@ def writer_image_book(title, image_url, path_image):
 # écrit les données d'un livre + son en-tête.
 def writer_data_book_csv(data_book, title, path_csv):
     heading = ["product_page_url", "universal_product_code (upc)", "title","price_including_tax", "price_excluding_tax", "number_available", "product_description", "category","review_rating", "image_url" ]
-    with open(path_csv+f'/Analyze_Product_{title}.csv', 'a', encoding='utf-8') as fichier_csv:  # 'encoding='utf-8', errors='ignore', permet d'éviter les UnicodeError
+    with open(path_csv+f'/Analyze_Product_{title}.csv', 'w', encoding='utf-8') as fichier_csv:  # 'encoding='utf-8', errors='ignore', permet d'éviter les UnicodeError
         writer = csv.writer(fichier_csv, delimiter=',')
         writer.writerow(heading)
         writer.writerow(data_book)

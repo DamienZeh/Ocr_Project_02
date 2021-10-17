@@ -1,63 +1,72 @@
-# Titre du projet
-_(ce qu'on veut mettre en parenthèses)_
-
-Une petite description du projet
-
-## Pour commencer
-
-Entrez ici les instructions pour bien débuter avec votre projet...
-
-### Pré-requis
-
-Ce qu'il est requis pour commencer avec votre projet...
-
-- Programme 1
-- Programme 2
-- etc...
-
-### Installation
-
-Les étapes pour installer votre programme....
-
-Dites ce qu'il faut faire...
-
-_exemple_: Executez la commande ``telnet mapscii.me`` pour commencer ensuite [...]
+# Scraper For Books To Scrape 
 
 
-Ensuite vous pouvez montrer ce que vous obtenez au final...
+Projet permettant de scraper de 3 manières différentes le contenu du site [https://books.toscrape.com](https://books.toscrape.com/).
+
+
+## Téléchargement et installation 
+
+
+- copier le dépôt distant, dans votre terminal/interpréteur
+	vous allez dans le dossier ou vous souhaitez placer le projet,
+	 ex :``cd C:\Users\damie\Documents\pythonProject``
+- ``git clone https://github.com/Damndamn2/Ocr_Project_02.git``
+- Puis on va dans ce projet : ``cd Ocr_Project_02\``
+- On crée l’environnement virtuel avec  ``python -m venv env``
+	_(‘env’ est le nom que j’ai sur mon environnement virtuel, il est aussi noté dans le gitignore.)_
+- Puis on l’active : ``.\env\scripts\activate`` (pour windows)
+	_(on a maintenant un ‘(env)’ d’afficher)_
+- Puis, l’installation  des packages(présent dans le requirements.text):
+	``pip install -r requirements.txt``
+
 
 ## Démarrage
 
-Dites comment faire pour lancer votre projet
 
-## Fabriqué avec
+### Basique
 
-Entrez les programmes/logiciels/ressources que vous avez utilisé pour développer votre projet
+Lancez l’un des 3 fichiers python que vous souhaitez, avec « python fichier.py »
+exemple : ``python Analyze_A_Product.py``
 
-_exemples :_
-* [Materialize.css](http://materializecss.com) - Framework CSS (front-end)
-* [Atom](https://atom.io/) - Editeur de textes
+- **Analyze_A_Product.py**
+Va donner toutes les informations d’un livre du site [https://books.toscrape.com](https://books.toscrape.com/). 
+De base il donne des infos sur le livre [‘Sharp Objects’](https://books.toscrape.com/catalogue/sharp-objects_997/index.html).
 
-## Contributing
+- **Analyze_Products_From_Category.py**
+Va donner toutes les infos des livres d’une catégorie du site.
+De base, il affiche les données de la catéorie [‘fantasy’](https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html).
 
-Si vous souhaitez contribuer, lisez le fichier [CONTRIBUTING.md](https://example.org) pour savoir comment le faire.
+- **Analyze_All_Categories.py**
+qui va donner tous les livres et leurs informations de tout le site [https://books.toscrape.com](https://books.toscrape.com/)
 
-## Versions
-Listez les versions ici 
-_exemple :_
-**Dernière version stable :** 5.0
-**Dernière version :** 5.1
-Liste des versions : [Cliquer pour afficher](https://github.com/your/project-name/tags)
-_(pour le lien mettez simplement l'URL de votre projets suivi de ``/tags``)_
 
-## Auteurs
-Listez le(s) auteur(s) du projet ici !
-* **Jhon doe** _alias_ [@outout14](https://github.com/outout14)
 
-Lisez la liste des [contributeurs](https://github.com/your/project/contributors) pour voir qui à aidé au projet !
+### Avancé
 
-_(pour le lien mettez simplement l'URL de votre projet suivi de ``/contirubors``)_
+Si vous souhaitez scraper d’autre lien dans le site, vous pouvez passer par un ide, comme [Pycharm](https://www.jetbrains.com/fr-fr/pycharm/) :
 
-## License
+- Lancez Pycharm
+- Ouvrir le dossier Ocr_Project_02.
+Puis pour activer l’environnement virtuel déjà présent dans le projet :
+ ``**File**→**Settings**→ **Project : Ocr_Project_02** → **Python Interpreter**→bouton **paramètre**(à droite)→**add**→cochez **Existing environnment**, puis choissisez le fichier **python.exe**, présent dans le projet dans ``env\Scripts\``. Puis faites **ok**.
 
-Ce projet est sous licence ``exemple: WTFTPL`` - voir le fichier [LICENSE.md](LICENSE.md) pour plus d'informations
+Puis ouvrez le fichier qui vous intéresses. Chacun des trois fichiers python, une fois exécuté vous donnera un dossier de sortie avec ses fichiers csv, et un dossier avec ses images de livres.
+_(les dossiers porteront le même nom que leur fichier, plus '**__Csv**' ou '**__Images**' à la fin.
+Les 3 fichiers fonctionnent de la même manière. Le lien que vous voulez taper est à mettre  tout en bas du code dans le main, entre ses guillemets.
+
+Pour **Analyze_A_Product.py** vous tapez le lien d’un des livres, et vous aurez son contenu.
+
+Pour **Analyze_Products_From_Category.py** vous tapez le lien de la première page d’une catégorie, pour avoir tout le contenu de cette catégorie.
+
+Et enfin pour **Analyze_All_Categories.py** vous aurez tout le contenu du site book.toscrape.com.
+
+
+
+
+
+
+### Auteur
+
+* **Damien Hernandez** _alias_[DamienZeh](https://damienhernandez.fr/)
+
+

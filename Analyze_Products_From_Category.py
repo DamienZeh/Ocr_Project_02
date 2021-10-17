@@ -5,7 +5,7 @@ import os
 
 
 def main(url_category):
-
+    """Lancer en premier, sert à regrouper l'appel des différentes fonctions et la création des dossiers de sortie."""
     path_image = 'Analyze_Products_From_Category__Images'  # répertoire de sortie pour les images.
     if not os.path.exists('Analyze_Products_From_Category__Images'):
         os.mkdir('Analyze_Products_From_Category__Images')
@@ -16,25 +16,28 @@ def main(url_category):
 
     for pages in etl_pages_category(url_category):
         for books in etl_books_in_page(pages):
-            soup_data_book = requests_parser(books)
+            soup_data_book = requests_parser(books) #récupère la requête d'un page d'un livre.
             title= etl_book(books, soup_data_book)[2]
             image_url= etl_book(books, soup_data_book)[-1]
-            writer_data_book_csv(etl_book(books, soup_data_book), name_category(url_category), path_csv)
-            writer_image_book(title,image_url, path_image)
+            writer_data_book_csv(etl_book(books, soup_data_book), name_category(url_category), path_csv)# écrit les csv
+            writer_image_book(title,image_url, path_image)       # écrit les images
 
 def name_category(url_category):
-    name_category=url_category.replace("https://books.toscrape.com/catalogue/category/books/","").replace("/index.html","")[:-2].replace("_","")
+    """renvoie le nom de la categorie en fonction de l'url"""
+    name_category = url_category.replace("https://books.toscrape.com/catalogue/category/books/","")\
+                      .replace("/index.html","")[:-2].replace("_","")
     return name_category
 
-def requests_parser(url):  #demande requête
+def requests_parser(url):
+    """fait une demande de requête, et retourne soup"""
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     return soup
 
-def etl_pages_category(url_pages_category): # récupère toutes les pages d'une catégorie
-    soup = requests_parser(url_pages_category)
-
-    #'pager' va servir de référence pour le nombre max de page. On vérifie qu'il existe avec try/except. Si oui, c'est qu'il y a plus d'une page.
+def etl_pages_category(url_pages_category):
+    """récupère toutes les pages d'une catégorie et les retourne."""
+    soup = requests_parser(url_pages_category)#on fait une requête
+    """ pager sert à trouver le nombre max de page. On vérifie qu'il existe avec try/except. Si oui, c'est qu'il y a plus d'une page."""
     try:
         pager =  soup.find(class_='current').text   # affiche page actuel sur page suivante. ex: Page 2 of 4
         str_pager = pager.replace('Page 1 of ', '') # on récupère le dernier chiffre pour avoir le nombre max de page
@@ -49,11 +52,12 @@ def etl_pages_category(url_pages_category): # récupère toutes les pages d'une 
     except:             # et donc ici, c'est si il n'y a qu'une page.
         pages_category=[]
         url_category_index=url_pages_category
-        pages_category.append(url_category_index)                #on stocke toutes les pages de la categorie dans la liste 'pageCategory'.
+        pages_category.append(url_category_index)       #on stocke toutes les pages de la categorie dans la liste 'pageCategory'.
     return pages_category
 
 
-def etl_books_in_page(url_page_livres):             # récupère tous les livres d'une page
+def etl_books_in_page(url_page_livres):
+    """récupère tous les livres d'une page, et les retourne"""
     soup = requests_parser(url_page_livres)
     links_books= soup.select('h3 > a')                #on récupère les liens html des livres.
     list_books_duplication = []
@@ -66,11 +70,12 @@ def etl_books_in_page(url_page_livres):             # récupère tous les livres
     books = replace_link_books.split(',')               # on a notre liste de liens pour les livres de la page
     return books
 
-def etl_book(url_book, soup): #on récupère les détails du livre
+def etl_book(url_book, soup):
+    """sert à regrouper les données d'un livre et les retourne."""
     details_prod_upc_tax_available = soup.find_all('td')  # ici on trouve l'UPC, les taxes et la disponibilité
     universal_product_code = ''.join(details_prod_upc_tax_available[0])     # code UPC
     title_name = ''.join(soup.find('li', class_="active"))  # titre.
-    # on limite la longueur et on enlève les caractères qui bloquent
+    # on limite la longueur et on enlève les caractères qui bloquent à title.
     title = title_name[:90].replace(':', '_').replace('/','_').replace("'","").replace('"','').replace('*', '_')\
         .replace('?', '_')
     price_including_tax = ''.join(details_prod_upc_tax_available[3])         # price_including_tax
@@ -78,7 +83,7 @@ def etl_book(url_book, soup): #on récupère les détails du livre
     number_available = ''.join(details_prod_upc_tax_available[5])         # available
 
     # description
-    try:                       #il y a des livres qui n'ont pas de description, on gère cette possible erreur ici, avec un try except.
+    try:                    #il y a des livres qui n'ont pas de description, on gère cette possible erreur ici, avec un try/except.
         product_descriptions = soup.find(class_='product_page').find_all('p')  # contenu de la classe product page
         product_description = ''.join(product_descriptions[3])  # 3 est la position de la description en 'p' dans la class product_page
     except:
@@ -92,7 +97,7 @@ def etl_book(url_book, soup): #on récupère les détails du livre
     review_rating_stars = soup.find('div', class_="col-sm-6 product_main").find_all('p')[2]
     rating_stars = (review_rating_stars['class'])
     review_rating = rating_stars[1]
-    if review_rating == "One":  # on adapte le chiffre obtenu avec une note sur cing.
+    if review_rating == "One":  # on adapte le chiffre obtenu avec une note sur cing en string.
         review_rating = "1 / 5"
     elif review_rating == "Two":
         review_rating = "2 / 5"
@@ -104,7 +109,7 @@ def etl_book(url_book, soup): #on récupère les détails du livre
         review_rating = "5 / 5"
     else:
         review_rating = "0 / 5"
-    reviews_rating = ''.join(review_rating)  # on le transforme en liste
+    reviews_rating = ''.join(review_rating)  # note
 
     # image_url:
     pic_url = soup.img
@@ -117,21 +122,23 @@ def etl_book(url_book, soup): #on récupère les détails du livre
     return data_book
 
 def writer_image_book(title, image_url, path_image):
+    """écrit l'image du livre avec le nom du titre, dans le bon chemin."""
     response = requests.get(image_url)
     with open(path_image+f'/{title}.jpg', 'wb') as image_file:
         image_file.write(response.content)
 
 # crée le csv avec l'entête.
 def creation_csv(name_category, path_csv):
+    """écrit l'entête du fichier csv avec le nom de la categorie, dans le bon chemin."""
     #en tête de la fiche
     heading = ["product_page_url", "universal_product_code (upc)", "title","price_including_tax", "price_excluding_tax", "number_available", "product_description", "category","review_rating", "image_url" ]
-    with open(path_csv+f'/Analyze_Products_From_Category_'+name_category+'.csv', 'w', encoding='utf-8') as fichier_csv:     # 'encoding='utf-8', errors='ignore', permet d'éviter les UnicodeError
+    with open(path_csv+f'/Analyze_Products_From_Category_'+name_category+'.csv', 'w', encoding='utf-8') as fichier_csv:
             writer = csv.writer(fichier_csv, delimiter=',')
             writer.writerow(heading)
 
-# écrit les données de tous les livres de toutes les pages d'une catégorie.
 def writer_data_book_csv(data_book,name_category, path_csv):
-    with open(path_csv+f'/Analyze_Products_From_Category_'+name_category+'.csv', 'a', encoding='utf-8') as fichier_csv:   # 'encoding='utf-8', errors='ignore', permet d'éviter les UnicodeError
+    """écrit les données d'un livre dans un fichier csv, avec le nom de la catégorie, dans le bon chemin."""
+    with open(path_csv+f'/Analyze_Products_From_Category_'+name_category+'.csv', 'a', encoding='utf-8') as fichier_csv:
         writer = csv.writer(fichier_csv, delimiter=',')
         writer.writerow(data_book)
 

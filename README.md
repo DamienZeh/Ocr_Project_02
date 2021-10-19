@@ -48,8 +48,12 @@ Si vous souhaitez scraper d’autres liens dans le site, vous pouvez passer par 
 
 - Lancez **Pycharm**
 - Ouvrez le dossier **Ocr_Project_02**.<br/>
- Si l’environnement virtuel n'est pas activé (pas de (env) dans le ``Command Prompt``) :<br/>
- tapez ``env\Scripts\activate.bat``
+Puis pour activer l’environnement virtuel déjà présent dans le projet :<br/>
+ ``File`` → ``Settings`` → ``Project : Ocr_Project_02`` → ``Python Interpreter`` → bouton ``paramètre``(à droite) → ``add`` → cochez ``Existing environnment``,<br/>
+ puis choisissez le fichier ``python.exe``, présent dans le projet dans ``env\Scripts\``. Puis faites ``ok``, puis ``apply``.<br/>
+- Puis dans ``Add Configuration``, en haut à droite, ``Add new``, choisir le Python interpreter du projet, choisir le ``Script path`` d'un des modules, <br/>
+faire ``Apply``, ``ok``
+
 
 
 Puis ouvrez le fichier qui vous intéresse. Chaque fichier python, une fois exécuté vous donnera un dossier de sortie avec ses fichiers csv, et un dossier avec ses fichiers images de livres.<br/>

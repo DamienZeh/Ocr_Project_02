@@ -12,7 +12,7 @@
 
 - copiez le dépôt distant, dans votre terminal/interpréteur. <br/>
 	Vous allez dans le dossier ou vous souhaitez placer le projet.<br/> 
-Exemple : ``cd C:\Users\damie\Documents\pythonProject``
+Exemple : ``cd C:\Users\damie\Documents\Python_Project``
 - Puis ``git clone https://github.com/Damndamn2/Ocr_Project_02.git``
 - Puis, allez dans ce projet : ``cd Ocr_Project_02\``
 - On crée l’environnement virtuel avec  ``python -m venv env``<br/>
@@ -47,8 +47,8 @@ De base, il affiche les données de la catéorie [‘fantasy’](https://books.t
 Si vous souhaitez scraper d’autres liens dans le site, vous pouvez passer par un IDE, comme [**Pycharm**](https://www.jetbrains.com/fr-fr/pycharm/) :
 
 - Lancez **Pycharm**
-- Ouvrez le dossier **Ocr_Project_02**. Puis pour activer l’environnement virtuel déjà présent dans le projet :<br/>
-Dans ``Terminal`` -> ``Command Prompt``  tapez ``env\Scripts\activate.bat``
+- Ouvrez le dossier **Ocr_Project_02**. Si l’environnement virtuel n'est pas activé (pas de (env) dans le ``Command Prompt`` :<br/>
+  tapez ``env\Scripts\activate.bat``
 
 
 Puis ouvrez le fichier qui vous intéresse. Chaque fichier python, une fois exécuté vous donnera un dossier de sortie avec ses fichiers csv, et un dossier avec ses fichiers images de livres.<br/>

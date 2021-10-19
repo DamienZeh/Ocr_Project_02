@@ -49,10 +49,11 @@ Si vous souhaitez scraper d’autres liens dans le site, vous pouvez passer par 
 - Lancez **Pycharm**
 - Ouvrez le dossier **Ocr_Project_02**.<br/>
 Puis pour activer l’environnement virtuel déjà présent dans le projet :<br/>
- ``File`` → ``Settings`` → ``Project : Ocr_Project_02`` → ``Python Interpreter`` → bouton ``paramètre``(à droite) → ``add`` → cochez ``Existing environnment``,<br/>
- puis choisissez le fichier ``python.exe``, présent dans le projet dans ``env\Scripts\``. Puis faites ``ok``, puis ``apply``.<br/>
-- Puis dans ``Add Configuration``, en haut à droite, ``Add new``, choisir le Python interpreter du projet, choisir le ``Script path`` d'un des modules, <br/>
-faire ``Apply``, ``ok``
+ ``File`` → ``Settings`` → ``Project : Ocr_Project_02`` → ``Python Interpreter`` → cliquez sur le lien -> ``Show All``, <br/>
+``+``, et vérifier que ``Existing environnment`` est coché, et que le chemin va bien jusqu'au **python.exe** du projet,<br/>
+ puis faire ``OK`` -> ``Apply`` -> ``OK``.
+
+ 
 
 
 

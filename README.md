@@ -13,7 +13,7 @@
 - copiez le dépôt distant, dans votre terminal/interpréteur. <br/>
 	Vous allez dans le dossier ou vous souhaitez placer le projet.<br/> 
 Exemple : ``cd C:\Users\damie\Documents\Python_Project``
-- Puis ``git clone https://github.com/Damndamn2/Ocr_Project_02.git``
+- Puis ``git clone https://github.com/DamienZeh/Ocr_Project_02.git``
 - Puis, allez dans ce projet : ``cd Ocr_Project_02\``
 - On crée l’environnement virtuel avec  ``python -m venv env``<br/>
 	_(‘env’ est le nom que j’ai sur mon environnement virtuel, il est aussi noté dans le gitignore.)_

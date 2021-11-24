@@ -1,4 +1,4 @@
-# Scraper Books To Scrape 
+# Scraper books to scrape 
 
 
 - Projet permettant de scraper de 3 manières différentes le contenu du site [https://books.toscrape.com](https://books.toscrape.com/).<br/>
@@ -13,8 +13,8 @@
 - copiez le dépôt distant, dans votre terminal/interpréteur. <br/>
 	Vous allez dans le dossier ou vous souhaitez placer le projet.<br/> 
 Exemple : ``cd C:\Users\damie\Documents\Python_Project``
-- Puis ``git clone https://github.com/DamienZeh/Ocr_Project_02.git``
-- Puis, allez dans ce projet : ``cd Ocr_Project_02\``
+- Puis ``git clone https://github.com/DamienZeh/scraper_le_site_books_to_scrape.git``
+- Puis, allez dans ce projet : ``cd scraper_le_site_books_to_scrape\``
 - On crée l’environnement virtuel avec  ``python -m venv env``<br/>
 	_(‘env’ est le nom que j’ai sur mon environnement virtuel, il est aussi noté dans le gitignore.)_
 - Puis activez le : ``.\env\Scripts\activate.bat`` (pour windows)<br/>
@@ -47,9 +47,9 @@ De base, il affiche les données de la catéorie [‘fantasy’](https://books.t
 Si vous souhaitez scraper d’autres liens dans le site, vous pouvez passer par un IDE, comme [**Pycharm**](https://www.jetbrains.com/fr-fr/pycharm/) :
 
 - Lancez **Pycharm**
-- Ouvrez le dossier **Ocr_Project_02**.<br/>
+- Ouvrez le dossier **scraper_le_site_books_to_scrape**.<br/>
 Puis pour activer l’environnement virtuel déjà présent dans le projet :<br/>
- ``File`` → ``Settings`` → ``Project : Ocr_Project_02`` → ``Python Interpreter`` → cliquez sur le lien -> ``Show All``, <br/>
+ ``File`` → ``Settings`` → ``Project : scraper_le_site_books_to_scrape`` → ``Python Interpreter`` → cliquez sur le lien -> ``Show All``, <br/>
 ``+``, et vérifier que ``Existing environnment`` est coché, et que le chemin va bien jusqu'au **python.exe** du projet,<br/>
  puis faire ``OK`` -> ``Apply`` -> ``OK``.
 
